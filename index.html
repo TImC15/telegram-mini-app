@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Форма записи</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        h2 {
+            font-size: 24px;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #f5e4c3; /* Цвет текста */
+            font-weight: bold;
+        }
+
+        .top-image {
+            width: 100%;
+            height: auto;
+            max-height: 400px;
+            margin: 0 auto 20px;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            border-radius: 20px;
+            border: none;
+            font-size: 16px;
+        }
+
+        label {
+            font-size: 16px;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .button-group button {
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            padding: 12px;
+            background-color: #333;
+            border-radius: 20px;
+            color: white;
+            width: 100%;
+            border: none;
+            cursor: pointer;
+            gap: 10px;
+        }
+
+        .button-group button:hover {
+            background-color: #444;
+        }
+
+        button {
+            background-color: #f5e4c3;
+            color: #000;
+            border: none;
+            padding: 14px;
+            font-size: 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <!-- Заголовок выше фото -->
+    <h2>Анкета предзаписи</h2>
+
+    <!-- Фото сверху -->
+    <img src="photo_1.jpg" alt="Preview" class="top-image">
+
+    <form id="leadForm">
+        <input type="email" placeholder="Email" name="email" required>
+        <input type="text" placeholder="Имя" name="name" required>
+        <input type="tel" placeholder="Телефон" name="phone" required>
+
+        <label for="instagram">Ваш Instagram *</label>
+        <input type="text" id="instagram" name="instagram" required>
+
+        <label>Какой ваш доход сейчас? *</label>
+        <div class="button-group">
+            <button type="button" onclick="selectIncome('0-100')">0 – 100 тысяч</button>
+            <button type="button" onclick="selectIncome('100-300')">100 – 300 тысяч</button>
+            <button type="button" onclick="selectIncome('300-500')">300 – 500 тысяч</button>
+            <button type="button" onclick="selectIncome('500-1000')">500 тыс – 1 млн</button>
+            <button type="button" onclick="selectIncome('1000+')">1 млн+</button>
+        </div>
+
+        <label>На какой доход хотите выйти? *</label>
+        <input type="text" name="goal_income" required>
+
+        <label>Какие проблемы есть сейчас, что не получается<br>зарабатывать столько сколько хочется *</label>
+        <textarea rows="4" name="problems" required></textarea>
+
+        <button type="submit">Записаться</button>
+    </form>
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        const tg = window.Telegram.WebApp;
+        const form = document.getElementById("leadForm");
+
+        let selectedIncome = null;
+
+        function selectIncome(value) {
+            selectedIncome = value;
+            // Убираем выделение с других кнопок
+            const buttons = document.querySelectorAll('.button-group button');
+            buttons.forEach(btn => btn.style.backgroundColor = '#333');
+            // Выделяем выбранную кнопку
+            event.target.style.backgroundColor = '#666';
+        }
+
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            // Проверяем, что все обязательные поля заполнены
+            const requiredFields = form.querySelectorAll("[required]");
+            for (let field of requiredFields) {
+                if (!field.value.trim()) {
+                    alert(`Пожалуйста, заполните поле: ${field.placeholder || field.name}`);
+                    return;
+                }
+            }
+
+            if (!selectedIncome) {
+                alert("Выберите ваш доход!");
+                return;
+            }
+
+            const formData = new FormData(form);
+            const data = {};
+            formData.forEach((value, key) => data[key] = value);
+
+            // Добавляем выбранный доход
+            data.income_now = selectedIncome;
+
+            if (tg && tg.sendData) {
+                tg.sendData(JSON.stringify(data)); // Отправляем данные в Telegram
+                tg.close(); // Закрываем приложение
+            } else {
+                alert("Ошибка: Telegram WebApp не доступен");
+            }
+        });
+    </script>
+</body>
+</html>
