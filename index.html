@@ -6,8 +6,8 @@
     <title>Форма записи</title>
     <style>
         body {
-            background-color: #000;
-            color: #fff;
+            background-color: #e0cba8;
+            color: #000;
             font-family: Arial, sans-serif;
             padding: 20px;
         }
@@ -16,7 +16,7 @@
             font-size: 24px;
             text-align: center;
             margin-bottom: 20px;
-            color: #f5e4c3; /* Цвет текста */
+            color: #f5e4c3;
             font-weight: bold;
         }
 
@@ -25,8 +25,7 @@
             height: auto;
             max-height: 400px;
             margin: 0 auto 20px;
-            border-bottom-left-radius: 30px;
-            border-bottom-right-radius: 30px;
+            border-radius: 30px;
         }
 
         input, textarea, select {
@@ -87,11 +86,7 @@
     </style>
 </head>
 <body>
-    <!-- Заголовок выше фото -->
-    <h2>Анкета предзаписи</h2>
-
-    <!-- Фото сверху -->
-    <img src="photo_1.jpg" alt="Preview" class="top-image">
+    <img src="photo.jpg" alt="Preview" class="top-image">
 
     <form id="leadForm">
         <input type="email" placeholder="Email" name="email" required>
@@ -128,17 +123,14 @@
 
         function selectIncome(value) {
             selectedIncome = value;
-            // Убираем выделение с других кнопок
             const buttons = document.querySelectorAll('.button-group button');
             buttons.forEach(btn => btn.style.backgroundColor = '#333');
-            // Выделяем выбранную кнопку
             event.target.style.backgroundColor = '#666';
         }
 
         form.addEventListener("submit", function (e) {
             e.preventDefault();
 
-            // Проверяем, что все обязательные поля заполнены
             const requiredFields = form.querySelectorAll("[required]");
             for (let field of requiredFields) {
                 if (!field.value.trim()) {
@@ -156,12 +148,11 @@
             const data = {};
             formData.forEach((value, key) => data[key] = value);
 
-            // Добавляем выбранный доход
             data.income_now = selectedIncome;
 
             if (tg && tg.sendData) {
-                tg.sendData(JSON.stringify(data)); // Отправляем данные в Telegram
-                tg.close(); // Закрываем приложение
+                tg.sendData(JSON.stringify(data));
+                tg.close();
             } else {
                 alert("Ошибка: Telegram WebApp не доступен");
             }
