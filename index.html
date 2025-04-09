@@ -151,6 +151,7 @@
             data.income_now = selectedIncome;
 
             if (tg && tg.sendData) {
+                console.log("Sending data to Telegram bot", data);
                 tg.sendData(JSON.stringify(data));
                 tg.close();
             } else {
